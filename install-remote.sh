@@ -224,8 +224,23 @@ fi
 step "5/7 Installing DLA"
 export PATH="$HOME/.local/bin:$PATH"
 
+# Clean uninstall any previous DLA installation
+if command -v dla &>/dev/null; then
+    info "Removing previous DLA installation..."
+    uv tool uninstall dla 2>/dev/null || true
+    rm -f "$HOME/.local/bin/dla" 2>/dev/null || true
+fi
+# Clear uv cache to avoid stale versions
+uv cache clean dla 2>/dev/null || true
+
 if [ -n "$WHEEL_PATH" ]; then
-    info "Installing from local wheel: $WHEEL_PATH"
+    # If the wheel has a generic name (e.g. dla.whl), rename so uv accepts it
+    if basename "$WHEEL_PATH" | grep -qv '-'; then
+        PROPER_NAME="/tmp/dla-0.0.0-py3-none-any.whl"
+        cp "$WHEEL_PATH" "$PROPER_NAME"
+        WHEEL_PATH="$PROPER_NAME"
+    fi
+    info "Installing from wheel: $(basename "$WHEEL_PATH")"
     uv tool install "$WHEEL_PATH" --force
 elif [ -n "$GITHUB_TOKEN" ]; then
     info "Installing from private repository..."
