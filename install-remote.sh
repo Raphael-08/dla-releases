@@ -251,9 +251,7 @@ step "6/7 Initializing DLA"
 dla init -p "$HOME/config" 2>/dev/null || true
 success "Config initialized at $HOME/config"
 
-info "Downloading JDBC drivers..."
-dla setup download 2>/dev/null || warn "Some drivers failed — run 'dla setup download' later"
-success "JDBC drivers ready"
+info "JDBC drivers will be installed automatically when you create a database connection"
 
 # ── 7. Systemd service ────────────────────────────────────────────────────────
 
